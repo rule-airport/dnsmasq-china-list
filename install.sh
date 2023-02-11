@@ -35,7 +35,7 @@ for _server in "${SERVERS[@]}"; do
     cp "$WORKDIR/$_conf.conf" "/etc/dnsmasq.d/$_conf.$_server.conf"
   done
 
-  sed -i "s|^\(server.*\)/[^/]*$|\1/$_server|" /etc/dnsmasq.d/*."$_server".conf
+  sed -i "s/server=\/\(.*\)\/\(.*\)/[\/\1\/]$_server/" /etc/dnsmasq.d/*."$_server".conf
 done
 
 echo "Cleaning up..."
