@@ -2,7 +2,7 @@
 set -e
 
 WORKDIR="$(mktemp -d)"
-SERVERS=(223.6.6. https://dns.alidns.com/dns-query)
+SERVERS=(119.29.29.29 223.5.5.5)
 # Others: 223.6.6.6 119.28.28.28
 # Not using best possible CDN pop: 1.2.4.8 210.2.4.8
 # Broken?: 180.76.76.76
@@ -29,14 +29,16 @@ echo "Installing new configurations..."
 for _conf in "${CONF_SIMPLE[@]}"; do
   cp "$WORKDIR/$_conf.conf" "/opt/AdGuardHome/upstreams/$_conf.conf"
 done
-
+#重命名一下
+counter=1
 for _server in "${SERVERS[@]}"; do
   for _conf in "${CONF_WITH_SERVERS[@]}"; do
-    cp "$WORKDIR/$_conf.conf" "/opt/AdGuardHome/upstreams/$_conf.$_server.conf"
+    cp "$WORKDIR/$_conf.conf" "/opt/AdGuardHome/upstreams/$_conf.$counter.conf"
   done
 
-  sed -i "s/server=\/\(.*\)\/\(.*\)/[\/\1\/]$_server/" /opt/AdGuardHome/upstreams/*."$_server".conf
-dones
+  sed -i "s/server=\/\(.*\)\/\(.*\)/[\/\1\/]$_server/" /opt/AdGuardHome/upstreams/*."$counter".conf
+  counter=$((counter+1))
+done
 
 echo "Cleaning up..."
 rm -r "$WORKDIR"
