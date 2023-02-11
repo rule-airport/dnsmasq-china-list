@@ -2,7 +2,7 @@
 set -e
 
 WORKDIR="$(mktemp -d)"
-SERVERS=(114.114.114.114 114.114.115.115 223.5.5.5 119.29.29.29)
+SERVERS=(223.6.6. https://dns.alidns.com/dns-query)
 # Others: 223.6.6.6 119.28.28.28
 # Not using best possible CDN pop: 1.2.4.8 210.2.4.8
 # Broken?: 180.76.76.76
@@ -22,21 +22,21 @@ git clone --depth=1 https://gitee.com/felixonmars/dnsmasq-china-list.git "$WORKD
 
 echo "Removing old configurations..."
 for _conf in "${CONF_WITH_SERVERS[@]}" "${CONF_SIMPLE[@]}"; do
-  rm -f /etc/dnsmasq.d/"$_conf"*.conf
+  rm -f /opt/AdGuardHome/upstreams/"$_conf"*.conf
 done
 
 echo "Installing new configurations..."
 for _conf in "${CONF_SIMPLE[@]}"; do
-  cp "$WORKDIR/$_conf.conf" "/etc/dnsmasq.d/$_conf.conf"
+  cp "$WORKDIR/$_conf.conf" "/opt/AdGuardHome/upstreams/$_conf.conf"
 done
 
 for _server in "${SERVERS[@]}"; do
   for _conf in "${CONF_WITH_SERVERS[@]}"; do
-    cp "$WORKDIR/$_conf.conf" "/etc/dnsmasq.d/$_conf.$_server.conf"
+    cp "$WORKDIR/$_conf.conf" "/opt/AdGuardHome/upstreams/$_conf.$_server.conf"
   done
 
-  sed -i "s/server=\/\(.*\)\/\(.*\)/[\/\1\/]$_server/" /etc/dnsmasq.d/*."$_server".conf
-done
+  sed -i "s/server=\/\(.*\)\/\(.*\)/[\/\1\/]$_server/" /opt/AdGuardHome/upstreams/*."$_server".conf
+dones
 
 echo "Cleaning up..."
 rm -r "$WORKDIR"
